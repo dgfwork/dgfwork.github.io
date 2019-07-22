@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:locale" content="default">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-阿里岗位需求分析" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/24/阿里岗位需求分析/" class="article-date">
+  <time datetime="2019-01-24T11:49:31.000Z" itemprop="datePublished">2019-01-24</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/spider/">spider</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/24/阿里岗位需求分析/">阿里岗位需求分析</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本想写个通用爬虫，然后自行根据岗位需求抓取但是不知道url的keyword是如何编码的，链接如下：</p>
+<blockquote>
+<p><a href="https://job.alibaba.com/zhaopin/positionList.htm?keyWord=cHl0aG9u&amp;_input_charset=UTF-8&amp;" target="_blank" rel="noopener">https://job.alibaba.com/zhaopin/positionList.htm?keyWord=cHl0aG9u&amp;_input_charset=UTF-8&amp;</a></p>
+</blockquote>
+<p>另外阿里的反爬措施做得还是比较到位的，直接跳转出现乱码会被屏蔽<br>爬虫代码如下：</p>
+<pre><code>#coding:utf-8
+#解决编码问题
+import sys
+reload(sys)
+sys.setdefaultencoding(&apos;utf8&apos;)
+import  selenium
+from selenium import webdriver
+import selenium.webdriver.common.keys
+import time
+import lxml
+import lxml.etree
+import urllib2
+
+&quot;&quot;&quot;
+抓取阿里的岗位python需求主要是解决网页点击链接不跳转的情况
+其他的情况还是先提出每一页的若干岗位需求链接
+再逐个访问提取岗位需求
+第一页是入口,进去之后抓到总的页面数
+再用selenium模拟点击相应的次数抓取每页里面的链接
+再访问逐个链接抓取岗位需求制作词云
+&quot;&quot;&quot;
+def geturllist():
+    driver= webdriver.Chrome()
+    driver.get(&quot;https://job.alibaba.com/zhaopin/positionList.htm?keyWord=cHl0aG9u&amp;_input_charset=UTF-8&quot;)
+    time.sleep(5)
+    html = driver.page_source
+    html = lxml.etree.HTML(html)
+    pagenumbers = eval(html.xpath(&quot;//*[@id=\&quot;J-            pagination\&quot;]//ul/li[last()-1]/@data-index&quot;)[0])
+    urllist = []
+    url = html.xpath(&quot;//*[@id=\&quot;J-list-box\&quot;]//tr//td/span/a/@href&quot;)
+    for data in url:
+        urllist.append(&quot;https://job.alibaba.com/zhaopin/&quot;+data)
+    #访问第一页之后后面每页要模拟手工点击
+    for i in range(2,pagenumbers+1):
+        elem=driver.find_element_by_xpath(&quot;//*[@class=\&quot;pagination\&quot;]//ul//li[last()]//a&quot;)
+        elem.click()  #模拟点击
+        time.sleep(3)
+        html = driver.page_source
+        html = lxml.etree.HTML(html)
+        tempurl = html.xpath(&quot;//*[@id=\&quot;J-list-box\&quot;]//tr//td/span/a/@href&quot;)
+        for data in tempurl:
+            urllist.append(&quot;https://job.alibaba.com/zhaopin/&quot; + data)
+    return urllist
+    driver.close()
+def getinfo(url):
+    headers = {&quot;User-Agent&quot;: &quot;Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0);&quot;}
+    request = urllib2.Request(url, headers=headers)  # 发起请求，
+    # 也可以通过调⽤Request.add_header() 添加/修改⼀个特定的 header
+    request.add_header(&quot;Connection&quot;, &quot;keep-alive&quot;)  # 一直活着
+    response = urllib2.urlopen(request)
+    data = response.read()  # 打开请求，抓取数据
+    html = lxml.etree.HTML(data)
+    #xpath提取信息
+    info = html.xpath(&quot;//*[@class=\&quot;detail-content\&quot;]/text()&quot;)
+    return info
+
+
+filepath = &quot;info.txt&quot;
+file = open(filepath,&quot;w&quot;)
+for url in geturllist():
+    for line in getinfo(url):
+        file.write(line.strip()+&quot;\r\n&quot;)
+file.close()</code></pre><p>以上抓取到文本写入info.txt</p>
+<p>制作词云</p>
+<pre><code>#coding:utf-8
+import jieba  #分词
+import matplotlib
+import matplotlib.pyplot as plt
+import wordcloud
+from wordcloud import WordCloud,ImageColorGenerator,STOPWORDS#词云
+import numpy as np #科学计算
+import jieba.analyse
+from PIL import Image  #处理图片
+textfile=open(&quot;info.txt&quot;).read()
+textfile = textfile.replace(&quot;1&quot;,&quot;&quot;).replace(&quot;2&quot;,&quot;&quot;).replace(&quot;3&quot;,&quot;&quot;).replace(&quot;4&quot;,&quot;&quot;)
+textfile = textfile.replace(&quot;5&quot;,&quot;&quot;).replace(&quot;6&quot;,&quot;&quot;).replace(&quot;7&quot;,&quot;&quot;).replace(&quot;8&quot;,&quot;&quot;)
+wordlist=jieba.cut_for_search(textfile)
+space_list=&quot; &quot;.join(wordlist)
+backgroud=np.array(Image.open(&quot;2.jpg&quot;)) #背景图片
+mywordcloud=WordCloud(width=1400, height=700,background_color=&quot;black&quot;, #背景颜色
+                      mask=backgroud,#写字用的背景图，从背景图取颜色
+                      max_words=200,  #最大词语数量
+                      stopwords=STOPWORDS, #停止的默认词语
+                      font_path=&quot;simkai.ttf&quot;, #字体
+                      max_font_size=200, #最大字体尺寸
+                      random_state=100,#随机角度
+                      scale=2).generate(space_list) #生成词云
+
+image_color=ImageColorGenerator(backgroud) #生成词云的颜色
+plt.imshow(mywordcloud) #显示词云
+plt.axis(&quot;off&quot;) #关闭保存
+plt.show()</code></pre><p><img src="alibaba.png" alt="词云"></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/01/24/阿里岗位需求分析/" data-id="cjydt4kwy0001mgtmv38q3roi" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-爬虫虾虾进阶之路" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/24/爬虫虾虾进阶之路/" class="article-date">
+  <time datetime="2019-01-24T10:49:40.000Z" itemprop="datePublished">2019-01-24</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/24/爬虫虾虾进阶之路/">爬虫虾虾进阶之路</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近一直学爬虫，毕业设计也是这个方向，目前计划就业也是这个方向，所以打算把学到的东西、还有自己做的demo贴出来。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/01/24/爬虫虾虾进阶之路/" data-id="cjydt4kw90000mgtmzf1vzyqy" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/spider/">spider</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/爬虫/">爬虫</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/爬虫/" style="font-size: 10px;">爬虫</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/01/24/阿里岗位需求分析/">阿里岗位需求分析</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/24/爬虫虾虾进阶之路/">爬虫虾虾进阶之路</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
