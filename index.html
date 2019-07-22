@@ -300,12 +300,19 @@
       
         
           
-            <h1 id="装饰器从入门到精通"><a href="#装饰器从入门到精通" class="headerlink" title="装饰器从入门到精通"></a>装饰器从入门到精通</h1><p>首先，我们看一下关于装饰器比较学术化的定义：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">​```装饰器 decorator</span><br><span class="line"></span><br><span class="line">或者称为包装器，是对函数的一种包装。</span><br><span class="line"></span><br><span class="line">它能使函数的功能得到扩充，而同时不用修改函数本身的代码。</span><br><span class="line"></span><br><span class="line">它能够增加函数执行前、执行后的行为，而不需对调用函数的代码做任何改变。</span><br><span class="line">​</span><br></pre></td></tr></table></figure>
+            <h1 id="装饰器从入门到精通"><a href="#装饰器从入门到精通" class="headerlink" title="装饰器从入门到精通"></a>装饰器从入门到精通</h1><ul>
+<li><p>首先，我们看一下关于装饰器比较学术化的定义：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure>
 
-<pre><code>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">装饰器 decorator，或者称为包装器，是对函数的一种包装。它能使函数的功能得到扩充，而同时不用修改函数本身的代码。</span><br><span class="line"></span><br><span class="line">它能够增加函数执行前、执行后的行为，而不需对调用函数的代码做任何改变。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>上面这段文字还算是通俗易懂，解释得透彻吧，装饰器本质上就是一个闭包，假如你也不知道什么是闭包，通俗的说就是<code>定义在一个[函数](https://baike.baidu.com/item/%E5%87%BD%E6%95%B0/301912)内部的函数</code>,大概就是这样，请看下面的代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def timmer(f):</span><br><span class="line">    def inner():</span><br><span class="line">        start = time.time()</span><br><span class="line">        f()</span><br><span class="line">        end = time.time()</span><br><span class="line">        print(end - start)</span><br><span class="line"></span><br><span class="line">    return inner</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def func():</span><br><span class="line">    time.sleep(0.1)</span><br><span class="line">    # 时间太短无法测试 所以sleep一下</span><br><span class="line">    print(&quot;hello world&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">func = timmer(func)</span><br><span class="line"># 这里面讲func作为参数传到里面去执行了一趟!!!</span><br><span class="line"># 返回的func实际上是inner</span><br><span class="line">func()</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line">hello world</span><br><span class="line">0.10023927688598633</span><br><span class="line">&quot;&quot;&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>ok 上面这段代码你看明白了吗，没有也没关系，反正我是测试一下md文件的编辑 又不是专门给你看的急什么~</p>
+</li>
+</ul>
 
-</code></pre>
           
         
       
