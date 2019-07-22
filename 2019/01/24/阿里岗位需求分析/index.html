@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="爬虫,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本想写个通用爬虫，然后自行根据岗位需求抓取但是不知道url的keyword是如何编码的，链接如下：  https://job.alibaba.com/zhaopin/positionList.htm?keyWord=cHl0aG9u&amp;amp;_input_charset=UTF-8&amp;amp;  另外阿里的反爬措施做得还是比较到位的，直接跳转出现乱码会被屏蔽爬虫代码如下： #coding:utf-8">
+<meta name="keywords" content="爬虫">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阿里岗位需求分析">
+<meta property="og:url" content="http://yoursite.com/2019/01/24/阿里岗位需求分析/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本想写个通用爬虫，然后自行根据岗位需求抓取但是不知道url的keyword是如何编码的，链接如下：  https://job.alibaba.com/zhaopin/positionList.htm?keyWord=cHl0aG9u&amp;amp;_input_charset=UTF-8&amp;amp;  另外阿里的反爬措施做得还是比较到位的，直接跳转出现乱码会被屏蔽爬虫代码如下： #coding:utf-8">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://yoursite.com/2019/01/24/阿里岗位需求分析/alibaba.png">
+<meta property="og:updated_time" content="2019-01-24T13:14:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="阿里岗位需求分析">
+<meta name="twitter:description" content="本想写个通用爬虫，然后自行根据岗位需求抓取但是不知道url的keyword是如何编码的，链接如下：  https://job.alibaba.com/zhaopin/positionList.htm?keyWord=cHl0aG9u&amp;amp;_input_charset=UTF-8&amp;amp;  另外阿里的反爬措施做得还是比较到位的，直接跳转出现乱码会被屏蔽爬虫代码如下： #coding:utf-8">
+<meta name="twitter:image" content="http://yoursite.com/2019/01/24/阿里岗位需求分析/alibaba.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/01/24/阿里岗位需求分析/">
+
+
+
+
+
+  <title>阿里岗位需求分析 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/24/阿里岗位需求分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">阿里岗位需求分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-24T19:49:31+08:00">
+                2019-01-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/spider/" itemprop="url" rel="index">
+                    <span itemprop="name">spider</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本想写个通用爬虫，然后自行根据岗位需求抓取但是不知道url的keyword是如何编码的，链接如下：</p>
+<blockquote>
+<p><a href="https://job.alibaba.com/zhaopin/positionList.htm?keyWord=cHl0aG9u&amp;_input_charset=UTF-8&amp;" target="_blank" rel="noopener">https://job.alibaba.com/zhaopin/positionList.htm?keyWord=cHl0aG9u&amp;_input_charset=UTF-8&amp;</a></p>
+</blockquote>
+<p>另外阿里的反爬措施做得还是比较到位的，直接跳转出现乱码会被屏蔽<br>爬虫代码如下：</p>
+<pre><code>#coding:utf-8
+#解决编码问题
+import sys
+reload(sys)
+sys.setdefaultencoding(&apos;utf8&apos;)
+import  selenium
+from selenium import webdriver
+import selenium.webdriver.common.keys
+import time
+import lxml
+import lxml.etree
+import urllib2
+
+&quot;&quot;&quot;
+抓取阿里的岗位python需求主要是解决网页点击链接不跳转的情况
+其他的情况还是先提出每一页的若干岗位需求链接
+再逐个访问提取岗位需求
+第一页是入口,进去之后抓到总的页面数
+再用selenium模拟点击相应的次数抓取每页里面的链接
+再访问逐个链接抓取岗位需求制作词云
+&quot;&quot;&quot;
+def geturllist():
+    driver= webdriver.Chrome()
+    driver.get(&quot;https://job.alibaba.com/zhaopin/positionList.htm?keyWord=cHl0aG9u&amp;_input_charset=UTF-8&quot;)
+    time.sleep(5)
+    html = driver.page_source
+    html = lxml.etree.HTML(html)
+    pagenumbers = eval(html.xpath(&quot;//*[@id=\&quot;J-            pagination\&quot;]//ul/li[last()-1]/@data-index&quot;)[0])
+    urllist = []
+    url = html.xpath(&quot;//*[@id=\&quot;J-list-box\&quot;]//tr//td/span/a/@href&quot;)
+    for data in url:
+        urllist.append(&quot;https://job.alibaba.com/zhaopin/&quot;+data)
+    #访问第一页之后后面每页要模拟手工点击
+    for i in range(2,pagenumbers+1):
+        elem=driver.find_element_by_xpath(&quot;//*[@class=\&quot;pagination\&quot;]//ul//li[last()]//a&quot;)
+        elem.click()  #模拟点击
+        time.sleep(3)
+        html = driver.page_source
+        html = lxml.etree.HTML(html)
+        tempurl = html.xpath(&quot;//*[@id=\&quot;J-list-box\&quot;]//tr//td/span/a/@href&quot;)
+        for data in tempurl:
+            urllist.append(&quot;https://job.alibaba.com/zhaopin/&quot; + data)
+    return urllist
+    driver.close()
+def getinfo(url):
+    headers = {&quot;User-Agent&quot;: &quot;Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0);&quot;}
+    request = urllib2.Request(url, headers=headers)  # 发起请求，
+    # 也可以通过调⽤Request.add_header() 添加/修改⼀个特定的 header
+    request.add_header(&quot;Connection&quot;, &quot;keep-alive&quot;)  # 一直活着
+    response = urllib2.urlopen(request)
+    data = response.read()  # 打开请求，抓取数据
+    html = lxml.etree.HTML(data)
+    #xpath提取信息
+    info = html.xpath(&quot;//*[@class=\&quot;detail-content\&quot;]/text()&quot;)
+    return info
+
+
+filepath = &quot;info.txt&quot;
+file = open(filepath,&quot;w&quot;)
+for url in geturllist():
+    for line in getinfo(url):
+        file.write(line.strip()+&quot;\r\n&quot;)
+file.close()</code></pre><p>以上抓取到文本写入info.txt</p>
+<p>制作词云</p>
+<pre><code>#coding:utf-8
+import jieba  #分词
+import matplotlib
+import matplotlib.pyplot as plt
+import wordcloud
+from wordcloud import WordCloud,ImageColorGenerator,STOPWORDS#词云
+import numpy as np #科学计算
+import jieba.analyse
+from PIL import Image  #处理图片
+textfile=open(&quot;info.txt&quot;).read()
+textfile = textfile.replace(&quot;1&quot;,&quot;&quot;).replace(&quot;2&quot;,&quot;&quot;).replace(&quot;3&quot;,&quot;&quot;).replace(&quot;4&quot;,&quot;&quot;)
+textfile = textfile.replace(&quot;5&quot;,&quot;&quot;).replace(&quot;6&quot;,&quot;&quot;).replace(&quot;7&quot;,&quot;&quot;).replace(&quot;8&quot;,&quot;&quot;)
+wordlist=jieba.cut_for_search(textfile)
+space_list=&quot; &quot;.join(wordlist)
+backgroud=np.array(Image.open(&quot;2.jpg&quot;)) #背景图片
+mywordcloud=WordCloud(width=1400, height=700,background_color=&quot;black&quot;, #背景颜色
+                      mask=backgroud,#写字用的背景图，从背景图取颜色
+                      max_words=200,  #最大词语数量
+                      stopwords=STOPWORDS, #停止的默认词语
+                      font_path=&quot;simkai.ttf&quot;, #字体
+                      max_font_size=200, #最大字体尺寸
+                      random_state=100,#随机角度
+                      scale=2).generate(space_list) #生成词云
+
+image_color=ImageColorGenerator(backgroud) #生成词云的颜色
+plt.imshow(mywordcloud) #显示词云
+plt.axis(&quot;off&quot;) #关闭保存
+plt.show()</code></pre><p><img src="alibaba.png" alt="词云"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/爬虫/" rel="tag"># 爬虫</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/01/24/爬虫虾虾进阶之路/" rel="next" title="爬虫虾虾进阶之路">
+                <i class="fa fa-chevron-left"></i> 爬虫虾虾进阶之路
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">John Doe</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">categories</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John Doe</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
